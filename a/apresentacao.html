@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Apresentação SHC</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* =========================================
+           ESTILO GERAL & DARK GLASSMORPHISM
+           ========================================= */
+        :root {
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --primary-glow: #60a5fa;
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --danger-color: #ef4444;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-dark);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+            background-size: 40px 40px;
+        }
+
+        /* --- ESTRUTURA DO SLIDE --- */
+        .slide {
+            width: 1280px;
+            height: 720px;
+            background: var(--bg-card);
+            position: absolute; /* Mudança importante: Absolute para controlar posição via JS */
+            top: 0;
+            left: 0;
+            transform-origin: top left; /* A escala começa do canto superior esquerdo */
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(0,0,0,0.6);
+            display: none; /* Mantém hidden por padrão */
+            flex-direction: column;
+            border: 1px solid var(--glass-border);
+            /* Removemos a animação aqui para não conflitar com o transform scale do JS */
+        }
+
+        .slide.active { 
+            display: flex; 
+            /* Animação simplificada de opacidade apenas */
+            animation: simpleFade 0.5s ease-in-out;
+        }
+
+        @keyframes simpleFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* --- DECORAÇÕES --- */
+        .decorative-circle { position: absolute; top: -180px; right: -180px; width: 450px; height: 450px; background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(15, 23, 42, 0) 70%); border-radius: 50%; z-index: 0; filter: blur(50px); pointer-events: none; }
+        .glow-bottom-left { position: absolute; bottom: -150px; left: -100px; width: 400px; height: 400px; background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, rgba(15, 23, 42, 0) 70%); border-radius: 50%; z-index: 0; filter: blur(40px); pointer-events: none; }
+        .glow-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 800px; background: radial-gradient(circle, rgba(96, 165, 250, 0.08) 0%, rgba(15, 23, 42, 0) 70%); z-index: 0; pointer-events: none; }
+        .decorative-circle-right { position: absolute; top: 50%; right: -150px; transform: translateY(-50%); width: 400px; height: 400px; background: radial-gradient(circle, rgba(59, 130, 246, 0.2) 0%, rgba(15, 23, 42, 0) 80%); border-radius: 50%; z-index: 0; filter: blur(30px); }
+
+        /* --- TIPOGRAFIA --- */
+        .content { flex: 1; display: flex; flex-direction: column; justify-content: center; z-index: 1; }
+        .content-center { align-items: center; margin-top: 40px; }
+        .content-left { align-items: flex-start; padding: 4rem 6rem; }
+
+        h1 { font-size: 3.5rem; font-weight: 700; color: var(--primary-glow); margin-bottom: 0.5rem; text-shadow: 0 0 25px rgba(59, 130, 246, 0.4); }
+        h2 { font-size: 1.8rem; font-weight: 400; color: var(--text-secondary); letter-spacing: 2px; }
+
+        /* --- SLIDE 1: ÍCONES --- */
+        .icons-row { display: flex; justify-content: center; gap: 5rem; width: 100%; margin-top: 6rem; }
+        .icon-item { display: flex; flex-direction: column; align-items: center; gap: 1.5rem; width: 160px; }
+        .icon-fa { font-size: 4.5rem; background: linear-gradient(135deg, #3b82f6, #60a5fa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.25)); }
+        .custom-svg { width: 90px; height: 90px; filter: drop-shadow(0 0 15px rgba(59, 130, 246, 0.25)); }
+        .svg-fill { fill: url(#blueGradient); }
+        .svg-mask { fill: var(--bg-card); }
+        .icon-item span { font-size: 1.1rem; color: var(--text-primary); font-weight: 500; text-align: center; }
+
+        /* --- SLIDE 2: LISTA --- */
+        #slide2, #slide3, #slide4, #slide5, #slide6 { border-top: 6px solid #3b82f6; justify-content: flex-start; }
+        #slide2 h1, #slide3 h1, #slide4 h1, #slide5 h1, #slide6 h1 { margin-bottom: 3rem; text-align: left; }
+        ul.summary-list { list-style: none; padding-left: 1rem; display: flex; flex-direction: column; gap: 1.2rem; }
+        ul.summary-list li { font-size: 1.4rem; color: var(--text-primary); display: flex; align-items: center; }
+        ul.summary-list li::before { content: "•"; color: var(--primary-glow); font-size: 2rem; margin-right: 1rem; line-height: 0; position: relative; top: 2px; }
+
+        /* --- SLIDE 3: EQUIPE --- */
+        .team-grid { display: flex; justify-content: center; gap: 5rem; width: 100%; margin-top: 2rem; }
+        .team-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: 2rem; padding: 3rem 2rem; width: 420px; text-align: center; backdrop-filter: blur(10px); position: relative; overflow: hidden; transition: transform 0.3s ease, border-color 0.3s ease; }
+        .team-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px; background: linear-gradient(90deg, transparent, var(--primary-glow), transparent); opacity: 0.5; }
+        .team-card:hover { transform: translateY(-10px); border-color: var(--primary-glow); box-shadow: 0 15px 50px -10px rgba(59, 130, 246, 0.4); }
+        .avatar-circle { width: 250px; height: 250px; border-radius: 50%; background: var(--bg-dark); margin: 0 auto 2.5rem; display: flex; align-items: center; justify-content: center; border: 4px solid var(--primary-glow); box-shadow: 0 0 30px rgba(59, 130, 246, 0.4); position: relative; overflow: hidden; }
+        .avatar-circle i { font-size: 8rem; background: linear-gradient(180deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+        .team-name { font-size: 2.4rem; font-weight: 700; color: var(--text-primary); margin-bottom: 0.8rem; }
+        .team-role { font-size: 1rem; color: var(--primary-glow); font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; background: rgba(59, 130, 246, 0.15); padding: 0.8rem 1.5rem; border-radius: 50px; display: inline-block; }
+
+        /* --- SLIDE 4: INTRODUÇÃO --- */
+        .intro-card, .vision-text-block { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: 1.5rem; padding: 4rem 6rem; max-width: 1000px; backdrop-filter: blur(10px); position: relative; box-shadow: 0 10px 40px rgba(0,0,0,0.3); }
+        .intro-card::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 4px; background: var(--primary-glow); border-radius: 0 4px 4px 0; }
+        .intro-text { font-size: 1.5rem; line-height: 1.8; color: var(--text-secondary); text-align: justify; }
+
+        /* --- SLIDE 5: VISÃO E PROPOSTA DE VALOR --- */
+        .vision-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 3rem; width: 100%; padding: 0 2rem; align-items: center; height: 100%; }
+        .vision-main-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.9) 0%, rgba(15, 23, 42, 0.95) 100%); border: 1px solid var(--primary-glow); border-radius: 1.5rem; padding: 3rem; position: relative; box-shadow: 0 0 40px rgba(96, 165, 250, 0.15); }
+        .vision-main-card h3 { color: var(--primary-glow); font-size: 1.8rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 10px; }
+        .vision-quote { font-size: 1.6rem; line-height: 1.5; color: #fff; font-weight: 300; position: relative; margin-bottom: 2rem; }
+        .vision-quote::before { font-size: 5rem; color: var(--primary-glow); position: absolute; top: -40px; left: -20px; opacity: 0.3; }
+        .vision-tags { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; width: 100%; box-sizing: border-box; }
+        .vision-tag { background: rgba(96, 165, 250, 0.15); color: var(--primary-glow); padding: 0.5rem 1rem; border-radius: 50px; font-size: 0.8rem; border: 1px solid rgba(96, 165, 250, 0.3); font-weight: 600; display: flex; align-items: center; justify-content: center; text-align: center; }
+        
+        .value-prop-col { display: flex; flex-direction: column; gap: 1.5rem; }
+        .value-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-left: 4px solid transparent; padding: 1.5rem; border-radius: 1rem; display: flex; align-items: flex-start; gap: 1.2rem; transition: transform 0.3s; }
+        .value-card:hover { transform: translateX(10px); background: rgba(255, 255, 255, 0.05); }
+        .value-icon-box { min-width: 50px; height: 50px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+        .value-content h4 { color: #fff; font-size: 1.1rem; margin-bottom: 0.3rem; font-weight: 600; }
+        .value-content p { color: var(--text-secondary); font-size: 0.9rem; line-height: 1.4; margin: 0; }
+        .val-gain { border-left-color: #10b981; } .val-gain .value-icon-box { background: rgba(16, 185, 129, 0.2); color: #10b981; }
+        .val-pain { border-left-color: #f59e0b; } .val-pain .value-icon-box { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+        .val-cost { border-left-color: #3b82f6; } .val-cost .value-icon-box { background: rgba(59, 130, 246, 0.2); color: #3b82f6; }
+
+        /* --- SLIDE 6: PROBLEMA E OPORTUNIDADES --- */
+        .po-grid {
+            display: grid; 
+            grid-template-columns: 1fr 120px 1fr; 
+            gap: 2rem; 
+            width: 98%; 
+            max-width: 1350px; 
+            /* MUDANÇA 1: Stretch garante que as duas colunas tenham a mesma altura */
+            align-items: stretch; 
+            margin-top: 0;
+            height: 500px; /* Altura fixa ajuda a centralizar visualmente na tela */
+        }
+
+        .po-col { 
+            display: flex; 
+            flex-direction: column; 
+            /* MUDANÇA 2: Mantém o título preso no topo */
+            justify-content: flex-start; 
+            height: 100%;
+            padding-top: 20px;
+        }
+
+        .po-col h3 { 
+            text-align: center; 
+            margin-bottom: 1rem; 
+            font-size: 1.3rem; 
+            font-weight: 700; 
+            flex-shrink: 0; /* Garante que o título não seja esmagado */
+        }
+        .po-col-left h3 { color: var(--danger-color); }
+        .po-col-right h3 { color: var(--success-color); }
+
+        /* MUDANÇA 3: O Wrapper cresce e centraliza os cards */
+        .cards-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1; /* Ocupa todo o espaço restante da coluna */
+            justify-content: center; /* Centraliza os cards verticalmente nesse espaço */
+            gap: 1.5rem;
+        }
+
+        /* O resto continua igual... */
+        .po-row { display: flex; align-items: center; gap: 1rem; width: 100%; min-height: 70px; }
+        .po-row.left { justify-content: flex-end; }
+        .po-row.right { justify-content: flex-start; }
+
+        .po-icon-outer { min-width: 60px; display: flex; justify-content: center; align-items: center; }
+        .po-icon-outer img { width: 55px; height: 55px; object-fit: contain; filter: drop-shadow(0 0 5px rgba(255,255,255,0.4)); }
+
+        .po-card { padding: 1rem 1.2rem; border-radius: 0.8rem; width: 100%; max-width: 360px; backdrop-filter: blur(5px); border: 1px solid rgba(255,255,255,0.1); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .po-card strong { display: block; font-size: 0.95rem; margin-bottom: 0.2rem; color: #fff; }
+        .po-card p { margin: 0; font-size: 0.8rem; color: rgba(255,255,255,0.7); line-height: 1.2; }
+        .po-card.problem { background: linear-gradient(270deg, rgba(239, 68, 68, 0.15) 0%, rgba(30, 41, 59, 0.6) 100%); border-right: 3px solid var(--danger-color); }
+        .po-card.solution { background: linear-gradient(90deg, rgba(16, 185, 129, 0.15) 0%, rgba(30, 41, 59, 0.6) 100%); border-left: 3px solid var(--success-color); }
+
+        /* Setas centralizadas no meio das duas colunas */
+        .po-arrows { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; /* Já estava centralizado, mas com o stretch fica perfeito */
+            gap: 1rem; 
+            color: var(--primary-glow); 
+            font-size: 3.5rem; 
+            opacity: 0.8; 
+            height: 100%;
+            margin-top: 0; /* Remove margem extra pois o flex já centraliza */
+            padding-top: 40px; /* Compensação visual para alinhar com o centro dos cards e não com o título */
+        }
+        /* --- SLIDE 7: MATRIZ DE PRIORIZAÇÃO (OTIMIZADO) --- */
+        .matrix-container {
+            display: grid;
+            /* Eixo Y (Texto) | Coluna 1 | Coluna 2 */
+            grid-template-columns: 40px 1fr 1fr;
+            /* Linha 1 (Cabeçalho X) | Linha 2 (Conteúdo) | Linha 3 (Conteúdo) */
+            grid-template-rows: 30px 1fr 1fr;
+            gap: 15px;
+            width: 95%;
+            max-width: 1250px;
+            height: 550px;
+            align-items: stretch;
+        }
+
+        /* Cabeçalhos do Eixo X (Esforço) */
+        .axis-x-header {
+            grid-row: 1;
+            text-align: center;
+            color: var(--text-secondary);
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        /* Cabeçalhos do Eixo Y (Impacto) */
+        .axis-y-side {
+            grid-column: 1;
+            writing-mode: vertical-rl;
+            transform: rotate(180deg);
+            text-align: center;
+            color: var(--text-secondary);
+            font-weight: 800;
+            font-size: 0.9rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+        }
+
+        /* Quadrantes */
+        .quadrant-box {
+            background: rgba(30, 41, 59, 0.4);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255,255,255,0.05);
+            display: flex; 
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .quadrant-box::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 6px; }
+
+        /* Cores dos Quadrantes */
+        .q-high-impact-low-effort::before { background: #10b981; } /* Verde */
+        .q-high-impact-high-effort::before { background: #3b82f6; } /* Azul */
+        .q-low-impact-low-effort::before { background: #f59e0b; } /* Amarelo */
+        .q-low-impact-high-effort::before { background: #ef4444; } /* Vermelho */
+
+        /* Estilos de Texto */
+        .q-list { 
+            list-style: none; 
+            padding: 0; 
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem; /* Espaçamento ajustado para caber tudo */
+        }
+
+        .q-list li { 
+            color: #e2e8f0; 
+            font-size: 1.1rem; 
+            font-weight: 500;
+            display: flex; 
+            gap: 8px; 
+            line-height: 1.3;
+            align-items: flex-start;
+        }
+
+        /* Numeração dos itens para facilitar leitura */
+        .q-num {
+            color: var(--primary-glow);
+            font-weight: 700;
+            min-width: 20px;
+        }
+
+        /* --- SLIDE 8: USABILIDADE --- */
+        .usability-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; width: 95%; max-width: 1200px; align-items: stretch; }
+        .use-col { display: flex; flex-direction: column; gap: 1.5rem; }
+        .use-card { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--glass-border); border-radius: 1rem; padding: 2rem; backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center; transition: transform 0.3s; }
+        .use-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.05); }
+        .context-card { height: 100%; border-left: 4px solid var(--primary-glow); }
+        .use-header { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .use-title { color: #fff; font-size: 1.4rem; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+        .use-users { display: flex; gap: 1.5rem; margin-bottom: 2rem; }
+        .use-user-badge { background: rgba(96, 165, 250, 0.15); color: var(--primary-glow); padding: 0.5rem 1rem; border-radius: 50px; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 8px; border: 1px solid rgba(96, 165, 250, 0.3); }
+        .use-scenario-box { background: rgba(0,0,0,0.2); padding: 1.5rem; border-radius: 0.8rem; }
+        .use-label { color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; display: block; }
+        .use-text { color: #fff; font-size: 1rem; line-height: 1.5; }
+        .result-card { padding: 1.5rem; border-left: 4px solid transparent; }
+        .res-neg { border-left-color: var(--danger-color); background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, rgba(30, 41, 59, 0.4) 100%); }
+        .res-neg .use-title { color: var(--danger-color); font-size: 1.1rem; margin-bottom: 0.5rem; }
+        .res-pos { border-left-color: var(--success-color); background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, rgba(30, 41, 59, 0.4) 100%); }
+        .res-pos .use-title { color: var(--success-color); font-size: 1.1rem; margin-bottom: 0.5rem; }
+
+        /* --- SLIDE 9: FINANCEIRO --- */
+        .finance-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; width: 100%; padding: 0 4rem; align-items: center; }
+        .cost-structure { background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; padding: 2rem; }
+        .cost-title { text-align: center; color: #fff; font-weight: 700; margin-bottom: 2rem; }
+        .cost-row { display: flex; justify-content: space-between; padding: 1rem 0; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        .cost-row:last-child { border-bottom: none; }
+        .cost-row span:first-child { color: var(--text-secondary); }
+        .cost-row span:last-child { color: var(--primary-glow); font-weight: 700; }
+        .cost-row.total span:last-child { color: var(--danger-color); }
+        .breakeven-card { border: 2px solid var(--success-color); background: rgba(16, 185, 129, 0.05); border-radius: 1rem; padding: 3rem 2rem; text-align: center; display: flex; flex-direction: column; gap: 1rem; }
+        .bk-title { color: var(--success-color); font-weight: 700; font-size: 1.2rem; }
+        .bk-date { color: #fff; font-size: 3.5rem; font-weight: 800; line-height: 1; }
+        .bk-desc { color: var(--text-secondary); font-size: 0.9rem; margin-top: 1rem; line-height: 1.4; }
+        .revenue-model { margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1rem; }
+
+        /* --- SLIDE 10: ESTRATÉGIA DE LANÇAMENTO --- */
+        .launch-stack { display: flex; flex-direction: column; gap: 1.5rem; width: 95%; max-width: 1300px; margin-top: 2rem; }
+        .launch-bar { display: grid; grid-template-columns: 320px 1.2fr 1fr; background: rgba(30, 41, 59, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; overflow: hidden; min-height: 140px; }
+        .lb-side { display: flex; align-items: center; justify-content: center; padding: 1.5rem; font-weight: 800; color: #fff; font-size: 1.1rem; line-height: 1.3; border-right: 1px solid rgba(255,255,255,0.05); position: relative; white-space: nowrap; }
+        .lb-side::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 6px; }
+        .lb-side.pre { background: rgba(30, 58, 138, 0.3); } .lb-side.pre::before { background-color: #3b82f6; }
+        .lb-side.launch { background: rgba(59, 130, 246, 0.15); } .lb-side.launch::before { background-color: #60a5fa; }
+        .lb-side.post { background: rgba(16, 185, 129, 0.1); } .lb-side.post::before { background-color: #10b981; }
+        .lb-content, .lb-obj { padding: 2rem; display: flex; flex-direction: column; justify-content: center; text-align: left; }
+        .lb-content { border-right: 1px solid rgba(255,255,255,0.1); }
+        .lb-label { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; margin-bottom: 0.8rem; letter-spacing: 1px; }
+        .lb-text { color: #fff; font-size: 0.95rem; line-height: 1.5; }
+
+        /* --- SLIDE 11: OKRs (Versão Compacta Otimizada) --- */
+
+/* --- SLIDE 11: OKRs (Versão Final Balanceada) --- */
+
+/* 1. Centralização Vertical */
+#slide11 .content-center {
+    justify-content: center; /* Volta a centralizar, pois agora cabe na tela */
+    padding-top: 0; 
+    margin-top: 0;
+    height: 100%; /* Garante que usa toda a altura disponível */
+}
+
+#slide11 h1 {
+    margin-bottom: 3rem !important; /* Devolve a margem original para afastar do topo */
+    font-size: 3rem; 
+}
+
+/* 2. Wrapper com mais respiro */
+.okr-wrapper {
+    width: 95%;
+    max-width: 1200px; /* Levemente mais largo */
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem; /* AUMENTADO: Empurra os cards para baixo preenchendo o espaço */
+    margin-top: 0;
+}
+
+/* 3. Card do Objetivo Principal */
+.okr-main {
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(30, 41, 59, 0) 100%);
+    padding: 1.5rem 2.5rem;
+    border-radius: 1rem;
+    border-left: 6px solid var(--primary-glow);
+    text-align: left;
+    box-shadow: 0 5px 20px rgba(0,0,0,0.2); /* Sombra para dar volume */
+}
+
+.okr-main h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
+.okr-main p { font-size: 1.3rem; color: var(--text-primary); margin: 0; font-weight: 300; }
+
+/* 4. Grid Horizontal */
+.kr-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    width: 100%;
+}
+
+/* 5. Cards Menores (Mais altos e robustos) */
+.kr-card {
+    background: rgba(255,255,255,0.03);
+    padding: 2rem; /* Mais preenchimento interno */
+    border-radius: 1.2rem;
+    border: 1px solid var(--glass-border);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s, background 0.3s;
+    min-height: 220px; /* AUMENTADO: Altura fixa maior para ocupar espaço visual */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+
+.kr-card:hover {
+    transform: translateY(-8px);
+    background: rgba(255,255,255,0.06);
+    border-color: var(--primary-glow);
+}
+
+.kr-icon {
+    font-size: 2.5rem; /* Ícone maior */
+    color: var(--success-color); 
+    margin-bottom: 1rem;
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3));
+}
+
+.kr-value {
+    font-size: 2.8rem; /* Número maior */
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 0.5rem;
+    line-height: 1;
+}
+
+.kr-desc {
+    color: var(--text-secondary);
+    font-size: 1rem; /* Texto maior */
+    line-height: 1.4;
+}
+        
+        /* --- RODAPÉ --- */
+        .footer { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); padding: 2rem 5rem; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
+        .footer-block h3 { font-size: 1rem; color: var(--text-primary); margin-bottom: 0.5rem; font-weight: 700; }
+        .footer-block p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.5; }
+
+        /* --- NAVEGAÇÃO --- */
+        .nav-buttons { position: fixed; bottom: 20px; right: 20px; display: flex; gap: 10px; z-index: 100; }
+        .nav-btn { background: rgba(30, 41, 59, 0.8); border: 1px solid var(--glass-border); color: white; width: 50px; height: 50px; border-radius: 50%; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .nav-btn:hover { background: var(--primary-glow); border-color: var(--primary-glow); }
+    </style>
+</head>
+<body>
+
+    <svg style="width:0;height:0;position:absolute;" aria-hidden="true" focusable="false">
+        <linearGradient id="blueGradient" x2="1" y2="1">
+            <stop offset="0%" stop-color="#3b82f6" />
+            <stop offset="100%" stop-color="#60a5fa" />
+        </linearGradient>
+    </svg>
+
+    <div class="slide active" id="slide1">
+        <div class="decorative-circle"></div>
+        <div class="content content-center">
+            <h1>Sistema de Horas Complementares</h1>
+            <h2>SHC</h2>
+            <div class="icons-row">
+                <div class="icon-item"><i class="fas fa-file-lines icon-fa"></i><span>Documentação</span></div>
+                <div class="icon-item"><i class="fas fa-cloud-arrow-up icon-fa"></i><span>Upload Digital</span></div>
+                <div class="icon-item"><i class="fas fa-circle-check icon-fa"></i><span>Validação</span></div>
+                <div class="icon-item">
+                    <svg class="custom-svg" viewBox="0 0 512 512">
+                        <path class="svg-fill" d="M64 48 V 448 H 464 V 384 H 128 V 48 H 64 Z" />
+                        <rect class="svg-fill" x="160" y="80" width="80" height="280" rx="15" />
+                        <rect class="svg-fill" x="272" y="48" width="80" height="312" rx="15" />
+                        <path class="svg-fill" d="M330 380 L 360 480 L 410 460 L 390 350 Z" />
+                        <circle class="svg-mask" cx="360" cy="200" r="115" />
+                        <circle cx="360" cy="200" r="95" fill="none" stroke="url(#blueGradient)" stroke-width="30" />
+                        <circle class="svg-fill" cx="360" cy="170" r="35" />
+                        <path class="svg-fill" d="M 310 270 Q 360 210 410 270 V 280 H 310 Z" />
+                    </svg>
+                    <span>Relatórios</span>
+                </div>
+            </div>
+        </div>
+        <div class="footer">
+            <div class="footer-block"><h3>Equipe:</h3><p>Leonardo de Oliveira;</p><p>Maria Eduarda Schmidt.</p></div>
+            <div class="footer-block" style="text-align: right;"><h3>Professora Orientadora:</h3><p>Daniela Amorim</p></div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide2">
+        <div class="decorative-circle"></div>
+        <div class="glow-bottom-left"></div>
+        <div class="content content-left">
+            <h1>Sumário</h1>
+            <ul class="summary-list">
+                <li>Equipe</li>
+                <li>Introdução</li>
+                <li>Visão e Proposta de Valor</li>
+                <li>Problema e Oportunidades</li>
+                <li>Matriz de Priorização</li>
+                <li>Teste de Usabilidade</li>
+                <li>Viabilidade Financeira</li>
+                <li>Estratégia de Lançamento</li>
+                <li>Indicadores de Sucesso (OKRs)</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="slide" id="slide3">
+        <div class="decorative-circle"></div>
+        <div class="glow-center"></div>
+        <div class="content content-center" style="margin-top: 0;">
+            <h1 style="margin-bottom: 3rem;">Equipe</h1>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="avatar-circle">
+                        <img src="a.png" class="avatar-img" alt="Maria Eduarda">
+                    </div>
+                    <div class="team-name">Maria Eduarda</div>
+                    <div class="team-role">Front-end e Empreendedora</div>
+                </div>
+                <div class="team-card">
+                    <div class="avatar-circle">
+                         <img src="aa.png" class="avatar-img" alt="Leonardo">
+                    </div>
+                    <div class="team-name">Leonardo</div>
+                    <div class="team-role">Back-end e Empreendedor</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide4">
+        <div class="decorative-circle"></div>
+        <div class="glow-bottom-left"></div>
+        <div class="content content-left">
+            <h1 style="margin-bottom: 4rem;">Introdução</h1>
+            <div class="intro-card">
+                <p class="intro-text">
+                    A gestão de atividades na Faculdade Municipal de Palhoça (FMP) é manual, burocrático e descentralizado. O fluxo atual, baseado em formulários de papel, exige a transcrição de dados, gerando <strong>retrabalho constante</strong>, <strong>alto risco de erros</strong> e <strong>sobrecarga administrativa</strong>.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide5">
+        <div class="decorative-circle-right"></div>
+        <div class="content content-center">
+            <h1 style="margin-bottom: 3rem;">Visão e Proposta de Valor</h1>
+            
+            <div class="vision-layout">
+                <div class="vision-main-card">
+                    <h3><i class="fas fa-bullseye"></i> Visão do Produto</h3>
+                    <p class="vision-quote">
+                        Transformar um processo manual e burocrático em uma experiência digital <strong>ágil</strong>, <strong>organizada</strong> e <strong>confiável</strong>.
+                    </p>
+                    <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                        Uma plataforma centralizada que conecta alunos, coordenadores e secretaria em um fluxo único de validação.
+                    </p>
+                    <div class="vision-tags">
+                        <span class="vision-tag">Interface Intuitiva</span>
+                        <span class="vision-tag">Conformidade com o MEC</span>
+                        <span class="vision-tag">Transparência em tempo real</span>
+                        <span class="vision-tag">Alinhado às ODS's 4, 9 e 12</span>
+                    </div>
+                </div>
+
+                <div class="value-prop-col">
+                    <div class="value-card val-cost">
+                        <div class="value-icon-box"><i class="fas fa-chart-line"></i></div>
+                        <div class="value-content">
+                            <h4>Eficiência Operacional</h4>
+                            <p>Reduz custos e o tempo da secretaria, eliminando o manuseio de papéis e a transcrição manual de dados.</p>
+                        </div>
+                    </div>
+                    <div class="value-card val-pain">
+                        <div class="value-icon-box"><i class="fas fa-shield-halved"></i></div>
+                        <div class="value-content">
+                            <h4>Fim da Burocracia e Erros</h4>
+                            <p>Elimina o risco de perda de documentos físicos e falhas humanas no controle de planilhas paralelas.</p>
+                        </div>
+                    </div>
+                    <div class="value-card val-gain">
+                        <div class="value-icon-box"><i class="fas fa-bolt"></i></div>
+                        <div class="value-content">
+                            <h4>Agilidade e Transparência</h4>
+                            <p>Status em tempo real para o aluno e painel de validação rápida para o coordenador.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide6">
+        <div class="content content-center" style="margin-top: 10px;">
+            <h1>Problema e Oportunidades</h1>
+            
+            <div class="po-grid">
+                <div class="po-col po-col-left">
+                    <h3>Processo Atual:</h3>
+                    <div class="cards-wrapper">
+                        <div class="po-row left">
+                            <div class="po-icon-outer"><img src="Papelada.png" alt="Papelada"></div>
+                            <div class="po-card problem">
+                                <strong>Documentação Física</strong>
+                                <p>Alunos preenchem formulários em papel e entregam comprovantes.</p>
+                            </div>
+                        </div>
+                        <div class="po-row left">
+                            <div class="po-icon-outer"><img src="Fluxo.png" alt="Fluxo"></div>
+                            <div class="po-card problem">
+                                <strong>Fluxo Descentralizado</strong>
+                                <p>Documentos transitam sem controle centralizado.</p>
+                            </div>
+                        </div>
+                        <div class="po-row left">
+                            <div class="po-icon-outer"><img src="Retrabalho.png" alt="Retrabalho"></div>
+                            <div class="po-card problem">
+                                <strong>Retrabalho Constante</strong>
+                                <p>Transcrição manual de dados para planilhas.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="po-arrows">
+                    <i class="fas fa-arrow-right"></i>
+                    <i class="fas fa-arrow-left"></i>
+                </div>
+
+                <div class="po-col po-col-right">
+                    <h3>Processo Automatizado:</h3>
+                    <div class="cards-wrapper">
+                        <div class="po-row right">
+                            <div class="po-card solution">
+                                <strong>Automatiza e centraliza o fluxo</strong>
+                                <p>Reúne todas as etapas em uma única plataforma digital.</p>
+                            </div>
+                            <div class="po-icon-outer"><img src="Automatiza.png" alt="Automatiza"></div>
+                        </div>
+                        <div class="po-row right">
+                            <div class="po-card solution">
+                                <strong>Elimina formulários físicos</strong>
+                                <p>Substitui papelada por envio e validação online.</p>
+                            </div>
+                            <div class="po-icon-outer"><img src="Elimina Papel.png" alt="Elimina Papel"></div>
+                        </div>
+                        <div class="po-row right">
+                            <div class="po-card solution">
+                                <strong>Reduz retrabalho e erros</strong>
+                                <p>Minimiza falhas manuais e duplicação de tarefas.</p>
+                            </div>
+                            <div class="po-icon-outer"><img src="Reduz Erros.png" alt="Reduz Erros"></div>
+                        </div>
+                        <div class="po-row right">
+                            <div class="po-card solution">
+                                <strong>Aumenta agilidade</strong>
+                                <p>Garante acompanhamento claro e dados protegidos.</p>
+                            </div>
+                            <div class="po-icon-outer"><img src="Agilidade.png" alt="Agilidade"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide7">
+        <div class="content content-center">
+            <h1 style="margin-bottom: 2rem;">Matriz de Priorização</h1>
+            
+            <div class="matrix-container">
+                <div class="axis-x-header" style="grid-column: 2;">BAIXO ESFORÇO (Fácil)</div>
+                <div class="axis-x-header" style="grid-column: 3;">ALTO ESFORÇO (Difícil)</div>
+
+                <div class="axis-y-side" style="grid-row: 2;">ALTO IMPACTO</div>
+                <div class="axis-y-side" style="grid-row: 3;">BAIXO IMPACTO</div>
+
+                <div class="quadrant-box q-high-impact-low-effort" style="grid-row: 2; grid-column: 2;">
+                    <ul class="q-list">
+                        <li><span class="q-num">2.</span> Dashboard Inicial</li>
+                        <li><span class="q-num">3.</span> Cadastro de Horas (Alunos)</li>
+                        <li><span class="q-num">6.</span> Vis. Histórico de Horas (Alunos)</li>
+                        <li><span class="q-num">7.</span> Vis. Histórico de Horas (Admin)</li>
+                        <li><span class="q-num">5.</span> Filtros de validação</li>
+                        <li><span class="q-num">2.</span> (Nova) Visão Individual de Alunos</li>
+                    </ul>
+                </div>
+
+                <div class="quadrant-box q-high-impact-high-effort" style="grid-row: 2; grid-column: 3;">
+                    <ul class="q-list">
+                        <li><span class="q-num">1.</span> Login de Usuários</li>
+                        <li><span class="q-num">4.</span> Validação de Horas (Admin)</li>
+                        <li><span class="q-num">10.</span> Modificação de Registros</li>
+                        <li><span class="q-num">3.</span> (Nova) Divisão de Papéis</li>
+                        <li><span class="q-num">1.</span> (Nova) Importação de Banco de Dados</li>
+                    </ul>
+                </div>
+
+                <div class="quadrant-box q-low-impact-low-effort" style="grid-row: 3; grid-column: 2;">
+                    <ul class="q-list">
+                        <li><span class="q-num">9.</span> Visualização de Perfil</li>
+                        <li><span class="q-num">11.</span> Status Detalhados</li>
+                        <li><span class="q-num">8.</span> Filtro de Histórico</li>
+                    </ul>
+                </div>
+
+                <div class="quadrant-box q-low-impact-high-effort" style="grid-row: 3; grid-column: 3;">
+                    <ul class="q-list">
+                        <li><span class="q-num">12.</span> Tabela de Histórico de Edições (Gerenciamento)</li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide8">
+        <div class="glow-center"></div>
+        <div class="content content-center">
+            <h1 style="margin-bottom: 3rem;">Teste de Usabilidade</h1>
+            <div class="usability-layout">
+                <div class="use-col">
+                    <div class="use-card context-card">
+                        <div class="use-header">
+                            <div class="use-title"><i class="fas fa-flask"></i> O Teste Real</div>
+                        </div>
+                        <span class="use-label">Quem participou?</span>
+                        <div class="use-users">
+                            <div class="use-user-badge"><i class="fas fa-user"></i> Issaga</div>
+                            <div class="use-user-badge"><i class="fas fa-user"></i> Moniely</div>
+                        </div>
+                        <span class="use-label">O que eles fizeram? (Cenário)</span><br><br>
+                        <div class="use-scenario-box">
+                            <p class="use-text">"Você deve navegar pelo sistema e tentar cadastrar uma nova atividade complementar enviando um certificado e navegar pelo Histórico e Perfil."</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="use-col">
+                    <div class="use-card result-card res-neg">
+                        <div class="use-title"><i class="fas fa-exclamation-triangle"></i> Feedback Identificado</div>
+                        <p class="use-text"><strong>Dúvida Crítica:</strong> Os usuários pararam na tela de login perguntando se precisavam "Criar Conta", sem saber que o acesso é integrado.</p>
+                    </div>
+                    <div class="use-card result-card res-pos">
+                        <div class="use-title"><i class="fas fa-check-circle"></i> Melhoria Implementada</div>
+                        <p class="use-text">Adicionamos uma mensagem clara de feedback visual informando que o login utiliza <strong>CPF e DATA DE NASCIMENTO</strong>.</p>
+                    </div>
+                    <div class="use-card result-card" style="border-left: 4px solid var(--primary-glow);">
+                        <div class="use-title" style="color: var(--primary-glow); font-size: 1.1rem; margin-bottom: 0.5rem;"><i class="fas fa-lightbulb"></i> Sugestão Extra</div>
+                        <p class="use-text">Inclusão de um campo para o aluno sugerir a quantidade de horas da atividade no momento do cadastro.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide9">
+        <div class="decorative-circle-right"></div>
+        <div class="content content-center">
+            <h1 style="margin-bottom: 4rem;">Viabilidade Financeira</h1>
+            <div class="finance-layout">
+                <div class="cost-structure">
+                    <div class="cost-title">Estrutura de Custos</div>
+                    <div class="cost-row">
+                        <span>CAPEX (Licenças/Ferramentas)</span>
+                        <span>R$ 1.300,00</span>
+                    </div>
+                    <div class="cost-row">
+                        <span>OPEX Mensal (Equipe/Infra)</span>
+                        <span>R$ 19.700,00</span>
+                    </div>
+                    <div class="cost-row total">
+                        <span>Investimento Inicial (Lançamento)</span>
+                        <span>R$ 80.100,00</span>
+                    </div>
+                </div>
+                <div class="breakeven-card">
+                    <div class="bk-title">Ponto de Equilíbrio (Breakeven)</div>
+                    <div class="bk-date">AGO 2027</div>
+                    <div class="bk-desc">Momento em que o saldo acumulado se torna positivo, cobrindo todo o investimento inicial e custos operacionais.</div>
+                    <div class="revenue-model">
+                        <div class="bk-desc" style="color: #fff; font-weight: 600;">Modelo de Receita:</div>
+                        <div class="bk-desc">Licença Anual (R$ 7.5k) ou Licença de Compra (R$ 50k)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide10">
+        <div class="content content-center">
+            <h1 style="margin-bottom: 3rem;">Estratégia de Lançamento</h1>
+            <div class="launch-stack">
+                <div class="launch-bar">
+                    <div class="lb-side pre">Pré-Lançamento</div>
+                    <div class="lb-content">
+                        <div class="lb-label">AÇÃO & CANAL</div>
+                        <div class="lb-text">Demonstração do protótipo para Stakeholders e treinamento da equipe (Presencial/E-mail).</div>
+                    </div>
+                    <div class="lb-obj">
+                        <div class="lb-label">OBJETIVO</div>
+                        <div class="lb-text">Garantir alinhamento interno e preparar a "Prova de Conceito".</div>
+                    </div>
+                </div>
+                <div class="launch-bar">
+                    <div class="lb-side launch">Lançamento (Fase 1)</div>
+                    <div class="lb-content">
+                        <div class="lb-label">AÇÃO & CANAL</div>
+                        <div class="lb-text">Liberação oficial para alunos cadastrarem atividades. Divulgação via Portal e Murais.</div>
+                    </div>
+                    <div class="lb-obj">
+                        <div class="lb-label">OBJETIVO</div>
+                        <div class="lb-text">"Provar valor", gerar métricas de redução de tempo e feedback real.</div>
+                    </div>
+                </div>
+                <div class="launch-bar">
+                    <div class="lb-side post">Pós-Lançamento (Fase 2)</div>
+                    <div class="lb-content">
+                        <div class="lb-label">AÇÃO & CANAL</div>
+                        <div class="lb-text">Abordagem comercial a outras faculdades utilizando o "Case de Sucesso" da FMP.</div>
+                    </div>
+                    <div class="lb-obj">
+                        <div class="lb-label">OBJETIVO</div>
+                        <div class="lb-text">Expansão e venda de licenças.</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide11">
+    <div class="decorative-circle"></div>
+    <div class="content content-center">
+        <h1>Indicadores de Sucesso (OKRs)</h1>
+        
+        <div class="okr-wrapper">
+            <!-- Objetivo Principal -->
+            <div class="okr-main">
+                <h3><i class="fas fa-flag"></i> Objetivo Principal</h3>
+                <p>Validar a eficiência do SHC na FMP, provando a redução de burocracia e ganho de tempo.</p>
+            </div>
+
+            <!-- Grid com 3 cards lado a lado -->
+            <div class="kr-grid">
+                <div class="kr-card">
+                    <div class="kr-icon"><i class="fas fa-clipboard-check"></i></div>
+                    <div class="kr-value">100%</div>
+                    <p class="kr-desc">Das solicitações da turma piloto processadas.</p>
+                </div>
+                <div class="kr-card">
+                    <div class="kr-icon"><i class="fas fa-stopwatch"></i></div>
+                    <div class="kr-value">-40%</div>
+                    <p class="kr-desc">Redução no tempo operacional da secretaria.</p>
+                </div>
+                <div class="kr-card">
+                    <div class="kr-icon"><i class="fas fa-heart"></i></div>
+                    <div class="kr-value">> 80</div>
+                    <p class="kr-desc">Pontos de NPS (Satisfação) com usuários.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="slide" id="slide11">
+        </div>
+
+    <script>
+        let currentSlide = 1;
+        const totalSlides = 11;
+        const baseWidth = 1280;
+        const baseHeight = 720;
+
+        // Função para escalar os slides proporcionalmente
+        function scaleSlides() {
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+            
+            const scaleX = windowWidth / baseWidth;
+            const scaleY = windowHeight / baseHeight;
+            
+            const scale = Math.min(scaleX, scaleY);
+            
+            const slides = document.querySelectorAll('.slide');
+            slides.forEach(slide => {
+                slide.style.transform = `scale(${scale})`;
+                slide.style.marginLeft = `${(windowWidth - (baseWidth * scale)) / 2}px`;
+                slide.style.marginTop = `${(windowHeight - (baseHeight * scale)) / 2}px`;
+            });
+        }
+
+        function showSlide(n) {
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            if (n > totalSlides) currentSlide = 1;
+            if (n < 1) currentSlide = totalSlides;
+            const activeSlide = document.getElementById('slide' + currentSlide);
+            activeSlide.classList.add('active');
+        }
+
+        // As funções precisam existir para o teclado chamá-las
+        function nextSlide() { currentSlide++; showSlide(currentSlide); }
+        function prevSlide() { currentSlide--; showSlide(currentSlide); }
+        
+        // Navegação por teclado
+        document.addEventListener('keydown', function(e) {
+            if(e.key === "ArrowRight") nextSlide();
+            if(e.key === "ArrowLeft") prevSlide();
+        });
+
+        window.addEventListener('resize', scaleSlides);
+        window.addEventListener('load', scaleSlides);
+    </script>
+</body>
+</html>
