@@ -313,9 +313,20 @@
         .use-label { color: var(--text-secondary); font-size: 0.85rem; text-transform: uppercase; font-weight: 700; margin-bottom: 0.5rem; display: block; }
         .use-text { color: #fff; font-size: 1rem; line-height: 1.5; }
         .result-card { padding: 1.5rem; border-left: 4px solid transparent; }
-        .res-neg { border-left-color: var(--danger-color); background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, rgba(30, 41, 59, 0.4) 100%); }
+/* --- Substitua no SLIDE 8 --- */
+
+        .res-neg { 
+            border-left-color: var(--danger-color); 
+            /* Remove o gradiente e deixa vermelho transparente uniforme */
+            background: rgba(239, 68, 68, 0.15); 
+        }
+
+        .res-pos { 
+            border-left-color: var(--success-color); 
+            /* Remove o gradiente e deixa verde transparente uniforme */
+            background: rgba(16, 185, 129, 0.15); 
+        }
         .res-neg .use-title { color: var(--danger-color); font-size: 1.1rem; margin-bottom: 0.5rem; }
-        .res-pos { border-left-color: var(--success-color); background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, rgba(30, 41, 59, 0.4) 100%); }
         .res-pos .use-title { color: var(--success-color); font-size: 1.1rem; margin-bottom: 0.5rem; }
 
         /* --- SLIDE 9: FINANCEIRO --- */
@@ -910,6 +921,7 @@
     </script>
 </body>
 </html>
+
 
 
 
