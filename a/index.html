@@ -906,7 +906,6 @@
             activeSlide.classList.add('active');
         }
 
-        // As funções precisam existir para o teclado chamá-las
         function nextSlide() { currentSlide++; showSlide(currentSlide); }
         function prevSlide() { currentSlide--; showSlide(currentSlide); }
         
@@ -916,11 +915,29 @@
             if(e.key === "ArrowLeft") prevSlide();
         });
 
+        // --- NOVO: Navegação por Clique na Tela ---
+        document.addEventListener('click', function(e) {
+            // Pega a largura total da janela
+            const screenWidth = window.innerWidth;
+            // Pega a posição horizontal (X) onde ocorreu o clique
+            const clickPosition = e.clientX;
+
+            // Se a posição do clique for maior que a metade da tela -> Lado Direito
+            if (clickPosition > screenWidth / 2) {
+                nextSlide();
+            } 
+            // Caso contrário -> Lado Esquerdo
+            else {
+                prevSlide();
+            }
+        });
+
         window.addEventListener('resize', scaleSlides);
         window.addEventListener('load', scaleSlides);
     </script>
 </body>
 </html>
+
 
 
 
