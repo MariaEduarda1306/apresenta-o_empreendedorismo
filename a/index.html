@@ -359,94 +359,99 @@
 
         /* --- SLIDE 11: OKRs (Versão Compacta Otimizada) --- */
 
-/* --- SLIDE 11: OKRs (Versão Final Balanceada) --- */
+/* --- SLIDE 11: OKRs (Layout Denso para 3 Objetivos) --- */
+        
+        /* Ajuste do container principal */
+        #slide11 .content-center {
+            justify-content: flex-start; /* Começa do topo */
+            padding-top: 50px;
+            height: 100%;
+        }
 
-/* 1. Centralização Vertical */
-#slide11 .content-center {
-    justify-content: center; /* Volta a centralizar, pois agora cabe na tela */
-    padding-top: 0; 
-    margin-top: 0;
-    height: 100%; /* Garante que usa toda a altura disponível */
-}
+        #slide11 h1 {
+            font-size: 2.2rem; /* Título menor */
+            margin-bottom: 2rem !important;
+        }
 
-#slide11 h1 {
-    margin-bottom: 3rem !important; /* Devolve a margem original para afastar do topo */
-    font-size: 3rem; 
-}
+        /* Wrapper que segura as 3 linhas */
+        .okr-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem; /* Espaço entre as linhas de objetivos */
+            width: 96%;
+            max-width: 1300px;
+        }
 
-/* 2. Wrapper com mais respiro */
-.okr-wrapper {
-    width: 95%;
-    max-width: 1200px; /* Levemente mais largo */
-    display: flex;
-    flex-direction: column;
-    gap: 3.5rem; /* AUMENTADO: Empurra os cards para baixo preenchendo o espaço */
-    margin-top: 0;
-}
+        /* Cada Linha de Objetivo (Card Retangular) */
+        .okr-row-card {
+            display: grid;
+            grid-template-columns: 320px 1fr; /* Coluna 1: Info do Dono | Coluna 2: KRs */
+            background: rgba(30, 41, 59, 0.4);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            overflow: hidden;
+            min-height: 140px;
+        }
 
-/* 3. Card do Objetivo Principal */
-.okr-main {
-    background: linear-gradient(90deg, rgba(59, 130, 246, 0.15) 0%, rgba(30, 41, 59, 0) 100%);
-    padding: 1.5rem 2.5rem;
-    border-radius: 1rem;
-    border-left: 6px solid var(--primary-glow);
-    text-align: left;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.2); /* Sombra para dar volume */
-}
+        /* Lado Esquerdo: Identificação do Objetivo */
+        .okr-identity {
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-right: 1px solid var(--glass-border);
+            position: relative;
+        }
+        
+        /* Faixa colorida lateral */
+        .okr-identity::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+        
+        /* Cores por tipo */
+        .id-product { background: linear-gradient(90deg, rgba(59, 130, 246, 0.1) 0%, transparent 100%); }
+        .id-product::before { background: var(--primary-glow); }
+        
+        .id-dev { background: linear-gradient(90deg, rgba(16, 185, 129, 0.05) 0%, transparent 100%); }
+        .id-dev::before { background: var(--success-color); }
 
-.okr-main h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: #fff; text-transform: uppercase; letter-spacing: 1px; }
-.okr-main p { font-size: 1.3rem; color: var(--text-primary); margin: 0; font-weight: 300; }
+        .okr-role { font-size: 0.75rem; text-transform: uppercase; color: var(--text-secondary); font-weight: 700; letter-spacing: 1px; margin-bottom: 0.5rem; }
+        .okr-goal { font-size: 0.95rem; color: #fff; line-height: 1.4; font-weight: 500; }
 
-/* 4. Grid Horizontal */
-.kr-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 2rem;
-    width: 100%;
-}
+        /* Lado Direito: Grid dos KRs */
+        .okr-krs-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr; /* 3 KRs lado a lado */
+            gap: 1px; /* Gap pequeno para criar linhas divisórias sutis */
+            background: var(--glass-border); /* Cor das linhas divisórias */
+        }
 
-/* 5. Cards Menores (Mais altos e robustos) */
-.kr-card {
-    background: rgba(255,255,255,0.03);
-    padding: 2rem; /* Mais preenchimento interno */
-    border-radius: 1.2rem;
-    border: 1px solid var(--glass-border);
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s, background 0.3s;
-    min-height: 220px; /* AUMENTADO: Altura fixa maior para ocupar espaço visual */
-    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-}
+        .kr-mini-card {
+            background: var(--bg-card); /* Fundo volta a ser escuro */
+            padding: 1rem 1.2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
 
-.kr-card:hover {
-    transform: translateY(-8px);
-    background: rgba(255,255,255,0.06);
-    border-color: var(--primary-glow);
-}
+        .kr-mini-val {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #fff;
+            line-height: 1;
+            margin-bottom: 0.4rem;
+        }
+        
+        /* Cores específicas para os números */
+        .val-blue { color: var(--primary-glow); }
+        .val-green { color: var(--success-color); }
+        .val-purple { color: #a855f7; }
 
-.kr-icon {
-    font-size: 2.5rem; /* Ícone maior */
-    color: var(--success-color); 
-    margin-bottom: 1rem;
-    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.3));
-}
-
-.kr-value {
-    font-size: 2.8rem; /* Número maior */
-    font-weight: 800;
-    color: #fff;
-    margin-bottom: 0.5rem;
-    line-height: 1;
-}
-
-.kr-desc {
-    color: var(--text-secondary);
-    font-size: 1rem; /* Texto maior */
-    line-height: 1.4;
-}
+        .kr-mini-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            line-height: 1.3;
+        }
         
         /* --- RODAPÉ --- */
         .footer { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border-top: 1px solid var(--glass-border); padding: 2rem 5rem; display: flex; justify-content: space-between; align-items: center; z-index: 2; }
@@ -841,40 +846,86 @@
     </div>
 
     <div class="slide" id="slide11">
-    <div class="decorative-circle"></div>
-    <div class="content content-center">
-        <h1>Indicadores de Sucesso (OKRs)</h1>
-        
-        <div class="okr-wrapper">
-            <!-- Objetivo Principal -->
-            <div class="okr-main">
-                <h3><i class="fas fa-flag"></i> Objetivo Principal</h3>
-                <p>Validar a eficiência do SHC na FMP, provando a redução de burocracia e ganho de tempo.</p>
-            </div>
+        <div class="decorative-circle"></div>
+        <div class="content content-center">
+            <h1>Indicadores de Sucesso (OKRs)</h1>
+            
+            <div class="okr-stack">
+                
+                <div class="okr-row-card">
+                    <div class="okr-identity id-product">
+                        <div class="okr-role"><i class="fas fa-rocket"></i> Produto (Validação)</div>
+                        <div class="okr-goal">
+                            Validar a eficiência do SHC na FMP, provando a redução de burocracia para a Secretaria, Coordenadores de curso e Alunos.
+                        </div>
+                    </div>
+                    <div class="okr-krs-container">
+                        <div class="kr-mini-card">
+                            <div class="kr-mini-val val-blue">100%</div>
+                            <div class="kr-mini-desc">Das solicitações da turma piloto processadas.</div>
+                        </div>
+                        <div class="kr-mini-card">
+                            <div class="kr-mini-val val-blue">-40%</div>
+                            <div class="kr-mini-desc">Redução no tempo operacional da secretaria.</div>
+                        </div>
+                        <div class="kr-mini-card">
+                            <div class="kr-mini-val val-blue">> 80</div>
+                            <div class="kr-mini-desc">Alcançar satisfação (NPS) com usuários.</div>
+                        </div>
+                    </div>
+                </div>
 
-            <!-- Grid com 3 cards lado a lado -->
-            <div class="kr-grid">
-                <div class="kr-card">
-                    <div class="kr-icon"><i class="fas fa-clipboard-check"></i></div>
-                    <div class="kr-value">100%</div>
-                    <p class="kr-desc">Das solicitações da turma piloto processadas.</p>
+                <div class="okr-row-card">
+                    <div class="okr-identity id-dev">
+                        <div class="okr-role"><i class="fas fa-server"></i> Leonardo (Back-end)</div>
+                        <div class="okr-goal">
+                            Estabelecer a base de infraestrutura para a operação da Fase 1, focando na segurança e na integração de dados essenciais.
+                        </div>
+                    </div>
+                    <div class="okr-krs-container">
+                        <div class="kr-mini-card">
+                            <div class="kr-mini-val val-green">100%</div>
+                            <div class="kr-mini-desc">API de Importação implementada e testada.</div>
+                        </div>
+                        <div class="kr-mini-card">
+                            <div class="kr-mini-val val-green">Zero</div>
+                            <div class="kr-mini-desc">Falhas de acesso nos 4 perfis auditados.</div>
+                        </div>
+                        <div class="kr-mini-card">
+                            <div class="kr-mini-val val-green">< 3</div>
+                            <div class="kr-mini-desc">Bugs críticos no Pré-lançamento.</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="kr-card">
-                    <div class="kr-icon"><i class="fas fa-stopwatch"></i></div>
-                    <div class="kr-value">-40%</div>
-                    <p class="kr-desc">Redução no tempo operacional da secretaria.</p>
+
+                <div class="okr-row-card">
+                    <div class="okr-identity id-dev">
+                        <div class="okr-role"><i class="fas fa-laptop-code"></i> Maria (Front-end)</div>
+                        <div class="okr-goal">
+                            Assegurar a integração end-to-end das funcionalidades de alto impacto do SHC, entregando interfaces estáveis e transparentes.
+                        </div>
+                    </div>
+                    <div class="okr-krs-container">
+                        <div class="kr-mini-card">
+                            <div class="kr-mini-val val-purple">100%</div>
+                            <div class="kr-mini-desc">Consumo estável de endpoints JSON necessários.</div>
+                        </div>
+                        <div class="kr-mini-card">
+                            <div class="kr-mini-val val-purple">4 Perfis</div>
+                            <div class="kr-mini-desc">Lógicas visuais e de acesso implementadas.</div>
+                        </div>
+                        <div class="kr-mini-card">
+                            <div class="kr-mini-val val-purple">< 2min</div>
+                            <div class="kr-mini-desc">Tempo médio de submissão do fluxo de cadastro.</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="kr-card">
-                    <div class="kr-icon"><i class="fas fa-heart"></i></div>
-                    <div class="kr-value">> 80</div>
-                    <p class="kr-desc">Pontos de NPS (Satisfação) com usuários.</p>
-                </div>
+
             </div>
         </div>
     </div>
-</div>
 
-    <script>
+<script>
         let currentSlide = 1;
         const totalSlides = 11;
         const baseWidth = 1280;
@@ -937,9 +988,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
